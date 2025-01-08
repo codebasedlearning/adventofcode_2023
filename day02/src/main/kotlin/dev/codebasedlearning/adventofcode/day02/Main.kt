@@ -50,7 +50,7 @@ fun main() {
 
     // part 1: solutions: 8 / 2061
 
-    checkResult(2061) { // [M3 523us]
+    checkResult(2061) { // [M3 464.208us]
         games.sumOf { game ->
             val (red,green,blue) = rgbMax(game.cubes)
             if (red <= 12 && green <= 13 && blue <= 14) game.id else 0
@@ -59,7 +59,7 @@ fun main() {
 
     // part 2: solutions: 2286 / 72596
 
-    checkResult(72596) { // [M3 6.750792ms]
+    checkResult(72596) { // [M3 192.459us]
         games.sumOf { game ->
             val (red,green,blue) = rgbMax(game.cubes)
             red * green * blue
