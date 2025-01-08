@@ -1,4 +1,6 @@
 // (C) 2025 A.Voß, a.voss@fh-aachen.de, info@codebasedlearning.dev
+//
+// see https://adventofcode.com/2023/day/1
 
 package dev.codebasedlearning.adventofcode.day99
 
@@ -30,12 +32,12 @@ fun main() {
 
     checkResult(1) { // [M3 523us]
         1
-    }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (total distance)") }
+    }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (...)") }
 
     // part 2: solutions: y / 2
 
     checkResult(2) { // [M3 6.750792ms]
         2
-    }.let { (dt,result,check) -> println("[part 2 v1] result: $result $check, dt: $dt (similarity score)") }
+    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (...)") }
 
 }

@@ -1,6 +1,6 @@
 rootProject.name = "adventofcode_2023"
 include("day01")
-//include("day02")
+include("day02")
 //include("day03")
 //include("day04")
 //include("day05")
