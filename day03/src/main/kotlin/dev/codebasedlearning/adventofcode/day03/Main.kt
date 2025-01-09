@@ -63,13 +63,13 @@ fun main() {
 
     // part 1: solutions: 4361 / 525911
 
-    checkResult(525911) { // [M3 405.541us]
+    checkResult(525911) { // [M3 376us]
         foundAt.values.sumOf { it.sum() }
     }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (...)") }
 
     // part 2: solutions: 467835 / 75805607
 
-    checkResult(75805607) { // [M3 276.542us]
+    checkResult(75805607) { // [M3 217.042us]
         foundAt.filter { (pos,nums) -> grid[pos]=='*' && nums.size==2 }.values.sumOf { it[0]*it[1] }
     }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (...)") }
 }
