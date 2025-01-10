@@ -32,10 +32,14 @@ fun main() {
         lines.print(indent = 2, description = "Day $day, Input:", take = 2)
     }
 
-    val times = story.lines[0].substringAfter(':').parseNumbers<Long>(' ')
-    val distances = story.lines[1].substringAfter(':').parseNumbers<Long>(' ')
+    val (times,time) = story.lines[0].substringAfter(':').run {
+        parseNumbers<Long>(' ') to replace(" ","").toLong()
+    }
+    val (distances,distance) = story.lines[1].substringAfter(':').run {
+        parseNumbers<Long>(' ') to replace(" ","").toLong()
+    }
 
-    // this is the inner line between the roots of this quadratic curve:
+    // solution to this is the inner line between the roots of this (quadratic) upside-down parabel:
     //      (T-hold)*hold > dist
     //      -hold^2 + T hold - dist > 0
     // so solve this
@@ -59,14 +63,11 @@ fun main() {
         times.zip(distances).fold(1L) { m, (time, dist) ->
             m * calcWinningWays(time,dist)
         }
-    }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (...)") }
-
-    val time = story.lines[0].substringAfter(':').replace(" ","").parseNumbers<Long>(' ')[0]
-    val distance = story.lines[1].substringAfter(':').replace(" ","").parseNumbers<Long>(' ')[0]
+    }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (many Winning Ways)") }
 
     // part 2: solutions: 71503 / 30565288
 
     checkResult(30565288) { // [M3 4.958us]
         calcWinningWays(time,distance)
-    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (...)") }
+    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (larger Winning Ways)") }
 }
