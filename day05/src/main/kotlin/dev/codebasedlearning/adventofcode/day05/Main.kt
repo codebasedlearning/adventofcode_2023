@@ -7,6 +7,7 @@ package dev.codebasedlearning.adventofcode.day05
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.input.parseNumbers
 import dev.codebasedlearning.adventofcode.commons.input.toBlocks
+import dev.codebasedlearning.adventofcode.commons.iterables.shiftTo
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
 import dev.codebasedlearning.adventofcode.commons.visualization.print
 import java.util.LinkedList
@@ -83,11 +84,6 @@ fun LongRange.cutBy(other: LongRange): Triple<LongRange, LongRange, LongRange> {
     return Triple(frontRest,intersection,backRest)
 }
 
-fun <T> MutableCollection<T>.shiftTo(target: MutableCollection<T>) {
-    target.clear()
-    target.addAll(this)
-    this.clear()
-}
 fun main() {
     val story = object {
         val day = 5

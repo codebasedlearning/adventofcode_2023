@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.codebasedlearning:adventofcode_commons:3bd6e22bdc") {
+    implementation("com.github.codebasedlearning:adventofcode_commons:0f70083b24") {
         isChanging = true
     }
     testImplementation(kotlin("test"))
@@ -35,7 +35,7 @@ subprojects {
     }
 
     dependencies {
-        implementation("com.github.codebasedlearning:adventofcode_commons:3bd6e22bdc") {
+        implementation("com.github.codebasedlearning:adventofcode_commons:0f70083b24") {
             isChanging = true
         }
         testImplementation(kotlin("test"))
