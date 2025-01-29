@@ -6,6 +6,7 @@ package dev.codebasedlearning.adventofcode.day17
 
 import dev.codebasedlearning.adventofcode.commons.geometry.Direction
 import dev.codebasedlearning.adventofcode.commons.geometry.Position
+import dev.codebasedlearning.adventofcode.commons.geometry.Step
 import dev.codebasedlearning.adventofcode.commons.geometry.walk
 import dev.codebasedlearning.adventofcode.commons.graph.ShortestPaths
 import dev.codebasedlearning.adventofcode.commons.grid.toGrid
@@ -57,7 +58,7 @@ fun main() {
     val endPos = Position(grid.rows-1,grid.cols-1)
 
     // node with state in order to take past directions into account
-    data class StateNode(val pos: Position, val dir: Direction, val steps: Int)
+    data class StateNode(val step: Step, val sameDir: Int)
 
     // adjusted from commons -> needs to be refactored or unified
     fun <T> findShortestPathsDijkstra(start: T,
@@ -91,25 +92,25 @@ fun main() {
     // part 1: solutions: 102/59 / 916
 
     checkResult(916) { // [M3 348.466416ms]
-        findShortestPathsDijkstra(start = StateNode(startPos, Direction.Right, 0)) { node ->
-            node.pos.walk(Direction.Cardinals).filter {
-                it.pos in grid && !node.dir.isOpposite(it.dir)
-                        && (it.dir!=node.dir || node.steps<3)
+        findShortestPathsDijkstra(start = StateNode(Step(startPos, Direction.Origin), 0)) { node ->
+            node.step.pos.walk(Direction.Cardinals).filter {
+                it.pos in grid && !node.step.dir.isOpposite(it.dir)
+                        && (it.dir!=node.step.dir || node.sameDir<3)
             }.map {
-                StateNode(it.pos, it.dir, if (it.dir == node.dir) node.steps + 1 else 1) to grid[it.pos]
+                StateNode(Step(it.pos,it.dir), if (it.dir == node.step.dir) node.sameDir + 1 else 1) to grid[it.pos]
             }
-        }.distances.filter { it.key.pos==endPos }.minBy { it.value }.value
+        }.distances.filter { it.key.step.pos==endPos }.minBy { it.value }.value
     }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (minimize heat loss)") }
 
     // part 2: solutions: 94/71 / 1067
 
     checkResult(1067) { // [M3 1.054771625s]
-        findShortestPathsDijkstra(start = StateNode(startPos, Direction.Right /* or Down */, 0)) { node ->
-            node.pos.walk(Direction.Cardinals).filter { it.pos in grid && !node.dir.isOpposite(it.dir)
-                    && ( (it.dir!=node.dir && (node.steps==0 /* for start */ || node.steps>=4)) || (it.dir==node.dir && node.steps<10))
+        findShortestPathsDijkstra(start = StateNode(Step(startPos, Direction.Origin), 0)) { node ->
+            node.step.pos.walk(Direction.Cardinals).filter { it.pos in grid && !node.step.dir.isOpposite(it.dir)
+                    && ( (it.dir!=node.step.dir && (node.sameDir==0 /* for start */ || node.sameDir>=4)) || (it.dir==node.step.dir && node.sameDir<10))
             }.map {
-                StateNode(it.pos, it.dir, if (it.dir == node.dir) node.steps + 1 else 1) to grid[it.pos]
+                StateNode(Step(it.pos, it.dir), if (it.dir == node.step.dir) node.sameDir + 1 else 1) to grid[it.pos]
             }
-        }.distances.filter { it.key.pos==endPos && it.key.steps>=4 }.minBy { it.value }.value
+        }.distances.filter { it.key.step.pos==endPos && it.key.sameDir>=4 }.minBy { it.value }.value
     }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (ultra crucible)") }
 }
