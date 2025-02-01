@@ -98,7 +98,7 @@ fun main() {
                 .forEach { this[it] = Output(it) }
         }
 
-    fun runPulse(repeats: Int, stopAction: (Int, Pulse) -> Boolean) {
+    fun pressButton(repeats: Int, stopAction: (Int, Pulse) -> Boolean) {
         repeat(repeats) { cnt ->
             val queue: Queue<Pulse> = ArrayDeque()
             queue.add(Pulse("button", "broadcaster", value = false))
@@ -114,7 +114,7 @@ fun main() {
 
     checkResult(980457412) { // [M3 19.184166ms]
         var (lows,highs) = 0L to 0L
-        runPulse(1000) { _, pulse ->
+        pressButton(1000) { _, pulse ->
             if (pulse.value) highs++ else lows++;
             false
         }
@@ -142,7 +142,7 @@ fun main() {
 
         modules.values.forEach { it.reset() }
 
-        runPulse(100000) { cnt, pulse ->
+        pressButton(100000) { cnt, pulse ->
             if (cnt > 0) {
                 cycles.filter { it.value == 0L }
                     .filter { it.key.inputs.values.any { input -> !input } }
