@@ -43,33 +43,32 @@ fun main() {
     data class Pulse(val source: String, val target: String, val value: Boolean)
 
     abstract class Module(val name: String, val outputs: List<String>) {
-        var lastValue = false
-        fun send(value: Boolean) = outputs.map { Pulse(name, it, value = value) }.apply { lastValue = value }
+        var state = false
+        fun assignAndSend(value: Boolean): List<Pulse> {
+            state = value;
+            return outputs.map { Pulse(name, it, value = value) }
+        }
         abstract fun apply(pulse: Pulse): List<Pulse>
         open fun reset() {}
     }
 
     class Broadcast(outputs: List<String>) : Module("broadcaster", outputs) {
-        override fun apply(pulse: Pulse) = send(pulse.value)
+        override fun apply(pulse: Pulse) = assignAndSend(pulse.value)
     }
 
     class FlipFlop(name: String, outputs: List<String>) : Module(name, outputs) {
-        var state = false
-        override fun apply(pulse: Pulse): List<Pulse> = if (pulse.value) listOf() else {
-            state = state.not()
-            outputs.map { Pulse(name, it, value = state) }
-        }.apply { lastValue = state }
+        override fun apply(pulse: Pulse): List<Pulse> = when {
+            pulse.value -> listOf()
+            else -> assignAndSend(state.not())
+        }
         override fun reset() { state = false }
     }
 
     class Conjunction(name: String, outputs: List<String>) : Module(name, outputs) {
         val inputs = mutableMapOf<String, Boolean>()
-
         override fun apply(pulse: Pulse): List<Pulse> {
             inputs[pulse.source] = pulse.value
-            val newValue = !inputs.values.all { it }
-            lastValue = newValue
-            return outputs.map { Pulse(name, it, value = newValue) }
+            return assignAndSend(!inputs.values.all { it })
         }
         override fun reset() { inputs.keys.forEach { inputs[it] = false} }
     }
@@ -99,21 +98,28 @@ fun main() {
                 .forEach { this[it] = Output(it) }
         }
 
-    // part 1: solutions: 32000000/11687500 / 980457412
-
-    checkResult(980457412) { // [M3 523us]
-        var (lows,highs) = 0L to 0L
-        repeat(1000) {
+    fun runPulse(repeats: Int, stopAction: (Int, Pulse) -> Boolean) {
+        repeat(repeats) { cnt ->
             val queue: Queue<Pulse> = ArrayDeque()
             queue.add(Pulse("button", "broadcaster", value = false))
             while (queue.isNotEmpty()) {
                 val pulse = queue.remove()
-                if (pulse.value) highs++ else lows++
                 queue.addAll(modules[pulse.target]!!.apply(pulse))
+                if (stopAction(cnt,pulse)) return
             }
         }
+    }
+
+    // part 1: solutions: 32000000/11687500 / 980457412
+
+    checkResult(980457412) { // [M3 19.184166ms]
+        var (lows,highs) = 0L to 0L
+        runPulse(1000) { _, pulse ->
+            if (pulse.value) highs++ else lows++;
+            false
+        }
         lows * highs
-    }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (...)") }
+    }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (pulses)") }
 
 // my input:
 //      &zc -> kl
@@ -136,20 +142,14 @@ fun main() {
 
         modules.values.forEach { it.reset() }
 
-        var cnt = 1L
-        while(cnt < 100000L && cycles.values.any { it==0L }) {
-            val queue: Queue<Pulse> = ArrayDeque()
-            queue.add(Pulse("button", "broadcaster", value = false))
-            while (queue.isNotEmpty()) {
-                val pulse = queue.remove()
-                if (cnt>1) {
-                    cycles.filter { it.value==0L }
-                        .forEach { if (it.key.inputs.values.any { !it }) cycles[it.key]=cnt }
-                }
-                queue.addAll(modules[pulse.target]!!.apply(pulse))
+        runPulse(100000) { cnt, pulse ->
+            if (cnt > 0) {
+                cycles.filter { it.value == 0L }
+                    .filter { it.key.inputs.values.any { input -> !input } }
+                    .forEach { cycles[it.key] = cnt + 1L }
             }
-            cnt++
+            (cycles.values.all { it > 0L })
         }
         scm(cycles.values)
-    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (...)") }
+    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (low pulse to rx)") }
 }
