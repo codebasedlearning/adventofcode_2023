@@ -58,6 +58,8 @@ fun main() {
         }
     }
 
+    // Space and Location should be transferred to Commons...
+
     class Space<T> {
         val data: MutableList<MutableList<MutableList<T>>> = mutableListOf() // z,y,x
 
@@ -139,7 +141,7 @@ fun main() {
 
     // part 1: solutions: 5 / 463
 
-    checkResult(463) { // [M3 65.090500ms]
+    checkResult(463) { // [M3 63.755583ms]
         sortedBricks.withIndex().count { (i,brick) ->
             brick.removeFrom(tower)
             !sortedBricks.slice(i+1..<sortedBricks.size).any { it.fallIn(tower, justCheck = true) > 0 }
@@ -160,5 +162,5 @@ fun main() {
                     sortedBricks.slice(i+1..<sortedBricks.size).forEach { it.correctFromArchive() }
                 }
         }
-    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (...)") }
+    }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (chain reaction)") }
 }
