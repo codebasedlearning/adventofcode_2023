@@ -4,11 +4,11 @@
 
 package dev.codebasedlearning.adventofcode.day23
 
-import dev.codebasedlearning.adventofcode.commons.geometry.Direction
 import dev.codebasedlearning.adventofcode.commons.geometry.Position
 import dev.codebasedlearning.adventofcode.commons.geometry.plus
-import dev.codebasedlearning.adventofcode.commons.geometry.visit
-import dev.codebasedlearning.adventofcode.commons.grid.mapDirToKeys
+import dev.codebasedlearning.adventofcode.commons.geometry.walkCardinals
+import dev.codebasedlearning.adventofcode.commons.grid.inGrid
+import dev.codebasedlearning.adventofcode.commons.grid.mapKeysToDir
 import dev.codebasedlearning.adventofcode.commons.grid.toGrid
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
@@ -64,8 +64,8 @@ fun main() {
 
     checkResult(2334) { // [M3 102.385834ms]
         findLongestPath(start,end) { pos ->
-            if (hike[pos] in mapDirToKeys) listOf(pos+mapDirToKeys[hike[pos]]!! to 1)
-            else pos.visit(Direction.Cardinals).filter { it in hike && hike[it]!='#' }.map { it to 1 }.toList()
+            if (hike[pos] in mapKeysToDir) listOf(pos+mapKeysToDir[hike[pos]]!! to 1)
+            else pos.walkCardinals().inGrid(hike).filter { it.value!='#' }.map { it.pos to 1 }.toList()
         }.size
     }.let { (dt,result,check) -> println("[part 1] result: $result $check, dt: $dt (hiking)") }
 
@@ -76,11 +76,11 @@ fun main() {
         // the map and build edges by connecting only the junctions;
         // note that we must track the length of the path as it is not simply the distance between
         val neighbors = hike.positions.filter { hike[it]!='#' }.associateWith { pos ->
-            pos.visit(Direction.Cardinals).filter { it in hike && hike[it]!='#' }.map { ngPos ->
-                var (pPrev,p) = pos to ngPos // follow the narrow path
+            pos.walkCardinals().inGrid(hike).filter { it.value!='#' }.map { ngPos ->
+                var (pPrev,p) = pos to ngPos.pos // follow the narrow path
                 var length = 1
                 do {
-                    val path = p.visit(Direction.Cardinals).filter { it in hike && it!=pPrev && hike[it]!='#' }.toList()
+                    val path = p.walkCardinals().inGrid(hike).filter { it.pos!=pPrev && it.value!='#' }.map { it.pos }.toList()
                     if (path.size==1) { pPrev = p; p = path[0]; length++ }
                 } while (path.size==1)
                 p to length
@@ -91,8 +91,6 @@ fun main() {
             .zipWithNext { a,b -> neighbors[a]!!.find { it.first==b }!!.second }.sum()
     }.let { (dt,result,check) -> println("[part 2] result: $result $check, dt: $dt (nice hiking)") }
 }
-
-// maybe part of commons?
 
 fun longestPath(current: Position, end: Position,
                 neighbors: (Position) -> List<Pair<Position, Int>>,

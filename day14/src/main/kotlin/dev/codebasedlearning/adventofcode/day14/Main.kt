@@ -5,7 +5,6 @@
 package dev.codebasedlearning.adventofcode.day14
 
 import dev.codebasedlearning.adventofcode.commons.grid.Grid
-import dev.codebasedlearning.adventofcode.commons.grid.copy
 import dev.codebasedlearning.adventofcode.commons.grid.toGrid
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
@@ -41,6 +40,14 @@ fun main() {
 
     val rocks = story.lines.toGrid()
     // rocks.print(indent = 2, description = "Rocks:", separator = "")
+
+    fun <T> Grid<T>.copy():Grid<T> {
+        val f = Grid<T>()
+        for (l in data) {
+            f.data.add(l.toMutableList())
+        }
+        return f
+    }
 
     // implement only one direction, turn the grid for others;
     // could also be implemented in-place

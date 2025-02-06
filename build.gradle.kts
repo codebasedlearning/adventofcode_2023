@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     kotlin("jvm") version "2.1.0"
 }
@@ -11,9 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.codebasedlearning:adventofcode_commons:0f70083b24") {
-        isChanging = true
-    }
+    implementation("com.github.codebasedlearning:adventofcode_commons:d566940911") { isChanging = true }
     testImplementation(kotlin("test"))
 }
 
@@ -35,9 +35,8 @@ subprojects {
     }
 
     dependencies {
-        implementation("com.github.codebasedlearning:adventofcode_commons:0f70083b24") {
-            isChanging = true
-        }
+        implementation("com.github.codebasedlearning:adventofcode_commons:d566940911") { isChanging = true }
+        // implementation(files("path-to-jar"))
         testImplementation(kotlin("test"))
     }
 }

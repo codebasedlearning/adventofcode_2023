@@ -7,8 +7,9 @@ package dev.codebasedlearning.adventofcode.day17
 import dev.codebasedlearning.adventofcode.commons.geometry.Direction
 import dev.codebasedlearning.adventofcode.commons.geometry.Position
 import dev.codebasedlearning.adventofcode.commons.geometry.Step
-import dev.codebasedlearning.adventofcode.commons.geometry.walk
+import dev.codebasedlearning.adventofcode.commons.geometry.walkCardinals
 import dev.codebasedlearning.adventofcode.commons.graph.ShortestPaths
+import dev.codebasedlearning.adventofcode.commons.grid.inGrid
 import dev.codebasedlearning.adventofcode.commons.grid.toGrid
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
@@ -93,8 +94,8 @@ fun main() {
 
     checkResult(916) { // [M3 348.466416ms]
         findShortestPathsDijkstra(start = StateNode(Step(startPos, Direction.Origin), 0)) { node ->
-            node.step.pos.walk(Direction.Cardinals).filter {
-                it.pos in grid && !node.step.dir.isOpposite(it.dir)
+            node.step.pos.walkCardinals().inGrid(grid).filter {
+                !node.step.dir.isOpposite(it.dir)
                         && (it.dir!=node.step.dir || node.sameDir<3)
             }.map {
                 StateNode(Step(it.pos,it.dir), if (it.dir == node.step.dir) node.sameDir + 1 else 1) to grid[it.pos]
@@ -106,7 +107,7 @@ fun main() {
 
     checkResult(1067) { // [M3 1.054771625s]
         findShortestPathsDijkstra(start = StateNode(Step(startPos, Direction.Origin), 0)) { node ->
-            node.step.pos.walk(Direction.Cardinals).filter { it.pos in grid && !node.step.dir.isOpposite(it.dir)
+            node.step.pos.walkCardinals().inGrid(grid).filter { !node.step.dir.isOpposite(it.dir)
                     && ( (it.dir!=node.step.dir && (node.sameDir==0 /* for start */ || node.sameDir>=4)) || (it.dir==node.step.dir && node.sameDir<10))
             }.map {
                 StateNode(Step(it.pos, it.dir), if (it.dir == node.step.dir) node.sameDir + 1 else 1) to grid[it.pos]

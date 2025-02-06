@@ -6,7 +6,6 @@ package dev.codebasedlearning.adventofcode.day03
 
 import dev.codebasedlearning.adventofcode.commons.geometry.Position
 import dev.codebasedlearning.adventofcode.commons.grid.toGrid
-import dev.codebasedlearning.adventofcode.commons.grid.withGrid
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
 import dev.codebasedlearning.adventofcode.commons.visualization.print
@@ -41,7 +40,7 @@ fun main() {
 
     val grid = story.lines.toGrid() // it makes things easier
 
-    val symbolPos = grid.positions.withGrid(grid)
+    val symbolPos = grid.entries
         .filter { it.value != '.' && !it.value.isDigit() }
         .associate { it.pos to it.value }
     println("Symbols: ${symbolPos.values.toSet()}\n") // nice to know

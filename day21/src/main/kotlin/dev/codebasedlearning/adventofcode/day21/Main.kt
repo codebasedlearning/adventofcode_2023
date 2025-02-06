@@ -4,9 +4,8 @@
 
 package dev.codebasedlearning.adventofcode.day21
 
-import dev.codebasedlearning.adventofcode.commons.geometry.Direction
 import dev.codebasedlearning.adventofcode.commons.geometry.Position
-import dev.codebasedlearning.adventofcode.commons.geometry.visit
+import dev.codebasedlearning.adventofcode.commons.geometry.walkCardinals
 import dev.codebasedlearning.adventofcode.commons.grid.toGrid
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
@@ -56,9 +55,9 @@ fun main() {
             news.clear()
             while (queue.isNotEmpty()) {
                 val node = queue.removeFirst()
-                news.addAll(node.visit(Direction.Cardinals).filter {
-                    val p = if (extendGrid) Position(floorMod(it.row,garden.rows), floorMod(it.col,garden.cols)) else it
-                    p in garden && garden[p]=='.' })
+                news.addAll(node.walkCardinals().filter {
+                    val p = if (extendGrid) Position(floorMod(it.pos.row,garden.rows), floorMod(it.pos.col,garden.cols)) else it.pos
+                    p in garden && garden[p]=='.' }.map { it.pos })
             }
             queue.addAll(news)
         }

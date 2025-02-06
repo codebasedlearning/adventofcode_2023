@@ -4,6 +4,8 @@
 
 package dev.codebasedlearning.adventofcode.day22
 
+import dev.codebasedlearning.adventofcode.commons.geometry.Location
+import dev.codebasedlearning.adventofcode.commons.grid.Space
 import dev.codebasedlearning.adventofcode.commons.input.linesOf
 import dev.codebasedlearning.adventofcode.commons.input.parseNumbers
 import dev.codebasedlearning.adventofcode.commons.timing.checkResult
@@ -43,11 +45,6 @@ fun main() {
         lines.print(indent = 2, description = "Day $day, Input:", take = 2)
     }
 
-    data class Location(val x: Int, val y: Int, val z: Int) {
-        constructor(xyz: List<Int>) : this(xyz[0], xyz[1], xyz[2])
-        constructor(xyz: Triple<Int, Int, Int>) : this(xyz.first, xyz.second, xyz.third)
-    }
-
     data class Brick(var start: Location, var end: Location, var dzArchive: Int = 0,
                      val id: String = ('A'..'Z').random().toString()) {
         val locations get() = (start.x..end.x).asSequence().flatMap { x -> (start.y..end.y).flatMap { y -> (start.z..end.z).map { z -> Location(x,y,z) } } }
@@ -56,38 +53,6 @@ fun main() {
             start = Location(start.x, start.y, start.z+dzArchive)
             end = Location(end.x, end.y, end.z+dzArchive)
         }
-    }
-
-    // Space and Location should be transferred to Commons...
-
-    class Space<T> {
-        val data: MutableList<MutableList<MutableList<T>>> = mutableListOf() // z,y,x
-
-        val zDim: Int get() = data.size
-        val yDim: Int get() = data[0].size
-        val xDim: Int get() = data[0][0].size
-
-        val locations get() = (0..<xDim).flatMap { x -> (0..<yDim).flatMap { y -> (0..<zDim).map { z -> Location(x,y,z) } } }
-
-        constructor(xSize: Int, ySize: Int, zSize: Int, block: (loc: Location) -> T) {
-            reset(xSize, ySize, zSize, block)
-        }
-
-        fun reset(xSize: Int, ySize: Int, zSize: Int, block: (loc: Location) -> T) {
-            data.clear()
-            data.addAll(MutableList(zSize) { z -> MutableList(ySize) { y -> MutableList(xSize) { x -> block(Location(x,y,z)) } } })
-        }
-
-        operator fun get(x: Int, y: Int, z: Int): T = data[z][y][x]
-        operator fun get(loc: Location): T = get(loc.x,loc.y,loc.z)
-
-        operator fun set(x: Int, y: Int, z: Int, value: T) { data[z][y][x] = value }
-        operator fun set(loc: Location, value: T) { set(loc.x,loc.y,loc.z,value) }
-
-        fun isValid(x: Int, y: Int, z: Int) = (x in 0..<xDim && y in 0..<yDim && z in 0..<zDim)
-        fun isValid(loc: Location) = isValid(loc.x,loc.y,loc.z)
-
-        operator fun contains(loc: Location) = isValid(loc)
     }
 
     fun <T> Space<T>.copyTo(other: Space<T>) { locations.forEach { other[it] = this[it] } }
